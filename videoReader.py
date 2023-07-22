@@ -1,4 +1,5 @@
 import cv2
+import streamlink
 from imageRecognize import isSimilarToTargetTemplate
 currentStageCount = 0
 currentRefresh = 0
@@ -17,11 +18,20 @@ def loggingStreaming(mainWindowObj):
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
 
-    cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 260*60)
-    # 260 for test course clear
-    # 285 for refresh
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    useLocalVideo = False
+    fps = 0
+    if useLocalVideo:
+        cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 260*fps)
+        # 260 for test course clear
+        # 285 for refresh
+    else:
+        streams = streamlink.streams('https://www.twitch.tv/slrabbit99')
+        url = streams['720p60'].url if "720p60" in streams else streams['480p']
+        cap = cv2.VideoCapture(url)
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+
     save_interval = 0.4
     frame_count = 0
 
@@ -33,7 +43,7 @@ def loggingStreaming(mainWindowObj):
             if cooldownTimeForCourseClear >= fps*5:
                 cooldownTimeForCourseClear = 0
                 isMatchForCourseClearCoolDownNow = False
-        # cv2.imshow('frame', frame)
+        cv2.imshow('frame', frame)
 
         # Compare Per 0.5 seconds
         if frame_count % (fps * save_interval) == 0:
