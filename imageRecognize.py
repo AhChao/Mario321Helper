@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def compareWithTargetTemplate(templatePath, sourceObj, threshold):
+def isSimilarToTargetTemplate(templatePath, sourceObj, threshold):
     # small_image = cv2.convertScaleAbs(cv2.imread("./sampleImgs/321Mapping.png"))
     small_image = cv2.convertScaleAbs(cv2.imread(templatePath))
     assert small_image is not None, "file could not be read, check with os.path.exists()"
@@ -27,9 +27,11 @@ def compareWithTargetTemplate(templatePath, sourceObj, threshold):
     for pt in zip(*loc[::-1]):
         if pt != None:
             print("Matching Well with", templatePath)
+            return True
             break
     else:
         print("Not match well!")
+        return False
 
     # print(mn, maxVal, mnLoc, maxLoc)
     # Step 3: Draw the rectangle on large_image
