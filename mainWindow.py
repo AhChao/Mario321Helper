@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import *
+from outlineLabel import OutlinedLabel
 import sys
 
 label = ""
@@ -16,11 +17,12 @@ class MainWindow(QMainWindow):
 
         # setting  the geometry of window
         self.setGeometry(0, 0, 400, 300)
-        label = QLabel("\n 0 / 15 刷  0 / 7 關", self)
-        # label.setStyleSheet("background-color: rgba(255,255,255,0);")
-        label.setStyleSheet("background-color: gray;")
-        label.setFont(QFont('Microsoft JhengHei', 18, QFont.Bold))
+        label = OutlinedLabel(" 0 / 15 刷  0 / 7 關", self)
+        # label = QLabel(" 0 / 15 刷\n  0 / 7 關", self)
+        label.setStyleSheet(
+            "background-color: rgba(255,255,255,0);font-family : Microsoft JhengHei; font-size: 25pt;  font-weight: bold;")
         label.adjustSize()
+
         self.label = label
         self.show()
 
