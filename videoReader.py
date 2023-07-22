@@ -18,6 +18,7 @@ def loggingStreaming(mainWindowObj):
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
 
+    # useLocalVideo = True
     useLocalVideo = False
     fps = 0
     if useLocalVideo:
@@ -27,6 +28,14 @@ def loggingStreaming(mainWindowObj):
         # 260 for test course clear
         # 285 for refresh
     else:
+        session = streamlink.Streamlink()
+        session.set_option("twitch-low-latency", True)
+        session.set_option("hls-live-edge", 1)
+        session.set_option("hls-segment-stream-data", True)
+        session.set_option("hls-playlist-reload-time", "live-edge")
+        session.set_option("stream-segment-threads", 2)
+        session.set_option("player", "mpv")
+
         streams = streamlink.streams('https://www.twitch.tv/slrabbit99')
         url = streams['720p60'].url if "720p60" in streams else streams['480p']
         cap = cv2.VideoCapture(url)
