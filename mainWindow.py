@@ -4,8 +4,6 @@ from PyQt5.QtGui import *
 from outlineLabel import OutlinedLabel
 import sys
 
-label = ""
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,7 +15,7 @@ class MainWindow(QMainWindow):
 
         # setting  the geometry of window
         self.setGeometry(0, 0, 400, 300)
-        label = OutlinedLabel(" 0 / 15 刷  0 / 7 關", self)
+        label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
         # label = QLabel(" 0 / 15 刷\n  0 / 7 關", self)
         label.setStyleSheet(
             "background-color: rgba(255,255,255,0);font-family : Microsoft JhengHei; font-size: 25pt;  font-weight: bold;")
@@ -39,5 +37,6 @@ class MainWindow(QMainWindow):
         if self._drag_active:
             self._drag_active = False
 
-    def setTextToLabel(str):
-        label.setText(str)
+    def setTextToLabel(self, displayStr):
+        print("inside", displayStr)
+        self.label.setText(displayStr)
