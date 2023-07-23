@@ -1,5 +1,6 @@
 import cv2
 import streamlink
+import configparser
 from imageRecognize import isSimilarToTargetTemplate
 currentStageCount = 0
 currentRefresh = 0
@@ -8,10 +9,18 @@ maxRefresh = 15
 
 
 def loggingStreaming(mainWindowObj):
+    config = configparser.ConfigParser()
+    config.read(r'config.ini', encoding="utf8")
+
     global currentStageCount
     global currentRefresh
     global targetStageCount
     global maxRefresh
+    currentStageCount = 0
+    currentRefresh = 0
+    targetStageCount = int(config.get('321Config', 'targetStageCount'))
+    maxRefresh = int(config.get('321Config', 'maxRefresh'))
+    mainWindowObj.setTextToLabel(buildDisplayString())
 
     matchCourseClearTimes = 0
     match321Times = 0
@@ -52,7 +61,9 @@ def loggingStreaming(mainWindowObj):
             if cooldownTimeForCourseClear >= fps*5:
                 cooldownTimeForCourseClear = 0
                 isMatchForCourseClearCoolDownNow = False
-        cv2.imshow('frame', frame)
+
+        if config.get('DisplayConfig', 'debugWithShowFrame') == "True":
+            cv2.imshow('frame', frame)
 
         # Compare Per 0.5 seconds
         if frame_count % (fps * save_interval) == 0:

@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import *
 from outlineLabel import OutlinedLabel
 import sys
+import configparser
 
 
 class MainWindow(QMainWindow):
@@ -17,8 +18,14 @@ class MainWindow(QMainWindow):
         self.setGeometry(0, 0, 400, 300)
         label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
         # label = QLabel(" 0 / 15 刷\n  0 / 7 關", self)
-        label.setStyleSheet(
-            "background-color: rgba(255,255,255,0);font-family : Microsoft JhengHei; font-size: 25pt;  font-weight: bold;")
+        config = configparser.ConfigParser()
+        config.read(r'config.ini', encoding="utf8")
+        fontSize = config.get('DisplayConfig', 'fontSize')
+        labelStyle = "background-color: rgba(255,255,255,0);\
+                    font-family : Microsoft JhengHei;\
+                    font-size: "+str(fontSize)+"pt;\
+                    font-weight: bold;"
+        label.setStyleSheet(labelStyle)
         label.adjustSize()
 
         self.label = label
@@ -38,5 +45,6 @@ class MainWindow(QMainWindow):
             self._drag_active = False
 
     def setTextToLabel(self, displayStr):
-        print("inside", displayStr)
         self.label.setText(displayStr)
+        self.label.adjustSize()
+        self.resize(1920, 500)
