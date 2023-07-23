@@ -127,5 +127,13 @@ def resetCurrentValues():
     global currentRefresh
     currentRefresh = 0
     currentStageCount = 0
+
+    global maxRefresh
+    global targetStageCount
+    config = configparser.ConfigParser()
+    config.read(r'config.ini', encoding="utf8")
+    targetStageCount = int(config.get('321Config', 'targetStageCount'))
+    maxRefresh = int(config.get('321Config', 'maxRefresh'))
+
     global globalMainWindowObj
     globalMainWindowObj.setTextToLabel(buildDisplayString())
