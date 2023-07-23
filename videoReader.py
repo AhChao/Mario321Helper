@@ -31,7 +31,7 @@ def loggingStreaming(mainWindowObj):
     isMatchForCourseClearCoolDownNow = False
 
     useLocalVideo = True if config.get(
-        'TestingSettings', 'useLocalVideoToTest') == "True" else False
+        'StreamSettings', 'useLocalVideoToTest') == "True" else False
     fps = 0
     if useLocalVideo:
         cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
@@ -48,7 +48,9 @@ def loggingStreaming(mainWindowObj):
         session.set_option("stream-segment-threads", 2)
         session.set_option("player", "mpv")
 
-        streams = streamlink.streams('https://www.twitch.tv/slrabbit99')
+        twitchStreamLink = 'https://www.twitch.tv/' + \
+            config.get('StreamSettings', 'twtichStreamerName')
+        streams = streamlink.streams(twitchStreamLink)
         url = streams['720p60'].url if "720p60" in streams else streams['480p']
         cap = cv2.VideoCapture(url)
         fps = int(cap.get(cv2.CAP_PROP_FPS))
