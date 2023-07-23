@@ -31,7 +31,7 @@ def loggingStreaming(mainWindowObj):
     isMatchForCourseClearCoolDownNow = False
 
     useLocalVideo = True if config.get(
-        'TestingSettings', 'useLocalVideoToTest') else False
+        'TestingSettings', 'useLocalVideoToTest') == "True" else False
     fps = 0
     if useLocalVideo:
         cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
