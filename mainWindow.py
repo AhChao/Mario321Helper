@@ -11,8 +11,9 @@ from videoReader import *
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.setStyleSheet("background-color: rgba(255,255,255,0.5);")
-        self.setWindowTitle("Color")
+        self.setWindowTitle("Mario321Helper")
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
