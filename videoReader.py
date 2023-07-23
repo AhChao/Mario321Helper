@@ -6,9 +6,12 @@ currentStageCount = 0
 currentRefresh = 0
 targetStageCount = 7
 maxRefresh = 15
+globalMainWindowObj = ""
 
 
 def loggingStreaming(mainWindowObj):
+    global globalMainWindowObj
+    globalMainWindowObj = mainWindowObj
     config = configparser.ConfigParser()
     config.read(r'config.ini', encoding="utf8")
 
@@ -27,8 +30,8 @@ def loggingStreaming(mainWindowObj):
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
 
-    # useLocalVideo = True
-    useLocalVideo = False
+    useLocalVideo = True if config.get(
+        'TestingSettings', 'useLocalVideoToTest') else False
     fps = 0
     if useLocalVideo:
         cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
@@ -101,3 +104,26 @@ def buildDisplayString():
     global targetStageCount
     return str(currentRefresh)+" / " + str(maxRefresh) + " 刷  " + \
         str(currentStageCount) + " / " + str(targetStageCount) + " 關"
+
+
+def operateOnCurrentRefreshCount(val):
+    global currentRefresh
+    currentRefresh += val
+    global globalMainWindowObj
+    globalMainWindowObj.setTextToLabel(buildDisplayString())
+
+
+def operateOnCurrentStageCount(val):
+    global currentStageCount
+    currentStageCount += val
+    global globalMainWindowObj
+    globalMainWindowObj.setTextToLabel(buildDisplayString())
+
+
+def resetCurrentValues():
+    global currentStageCount
+    global currentRefresh
+    currentRefresh = 0
+    currentStageCount = 0
+    global globalMainWindowObj
+    globalMainWindowObj.setTextToLabel(buildDisplayString())

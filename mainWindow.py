@@ -5,6 +5,7 @@ from outlineLabel import OutlinedLabel
 from picButton import PicButton
 import sys
 import configparser
+from videoReader import *
 
 
 class MainWindow(QMainWindow):
@@ -38,35 +39,44 @@ class MainWindow(QMainWindow):
             refreshAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
             refreshAddBtn.resize(btnSize, btnSize)
             refreshAddBtn.move(fontSize*6, btnBaseLine)
+            refreshAddBtn.clicked.connect(
+                lambda: operateOnCurrentRefreshCount(1))
+            refreshAddBtn.setObjectName("refreshAddBtn")
 
             refreshMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             refreshMinusBtn.resize(btnSize, btnSize)
             refreshMinusBtn.move(fontSize*7.5, btnBaseLine)
+            refreshMinusBtn.clicked.connect(
+                lambda: operateOnCurrentRefreshCount(-1))
+            refreshMinusBtn.setObjectName("refreshMinusBtn")
 
             courseClearAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
             courseClearAddBtn.resize(btnSize, btnSize)
             courseClearAddBtn.move(fontSize*14, btnBaseLine)
+            courseClearAddBtn.clicked.connect(
+                lambda: operateOnCurrentStageCount(1))
+            courseClearAddBtn.setObjectName("courseClearAddBtn")
 
             courseClearMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             courseClearMinusBtn.resize(btnSize, btnSize)
             courseClearMinusBtn.move(fontSize*15.5, btnBaseLine)
+            courseClearMinusBtn.clicked.connect(
+                lambda: operateOnCurrentStageCount(-1))
+            courseClearMinusBtn.setObjectName("courseClearMinusBtn")
 
             btnEdit = PicButton(QPixmap('./imgs/editBtn.png'), self)
             btnEdit.resize(fontSize*2, fontSize*2)
-            btnEdit.move(fontSize*16.5, 10)
+            btnEdit.move(fontSize*18, 10)
+            btnEdit.clicked.connect(lambda: toggleEditBtns(self))
 
             btnReset = PicButton(QPixmap('./imgs/reset.png'), self)
             btnReset.resize(fontSize*2, fontSize*2)
-            btnReset.move(fontSize*19, 10)
+            btnReset.move(fontSize*20.5, 10)
+            btnReset.clicked.connect(resetCurrentValues)
+            btnReset.setObjectName("btnReset")
 
-        # layout = QVBoxLayout()
-        # layout.addWidget(label)
-        # layout.addWidget(btnReset)
-        # widget = QWidget()
-        # widget.setLayout(layout)
-        # self.setCentralWidget(widget)
         self.show()
 
     def mousePressEvent(self, e):
@@ -86,3 +96,22 @@ class MainWindow(QMainWindow):
         self.label.setText(displayStr)
         self.label.adjustSize()
         self.resize(1920, 500)
+
+
+def toggleEditBtns(mainWindowObj):
+    refreshAddBtn = mainWindowObj.findChild(
+        PicButton, "refreshAddBtn")
+    refreshMinusBtn = mainWindowObj.findChild(
+        PicButton, "refreshMinusBtn")
+    courseClearAddBtn = mainWindowObj.findChild(
+        PicButton, "courseClearAddBtn")
+    courseClearMinusBtn = mainWindowObj.findChild(
+        PicButton, "courseClearMinusBtn")
+    btnReset = mainWindowObj.findChild(
+        PicButton, "btnReset")
+    refreshAddBtn.show() if not refreshAddBtn.isVisible() else refreshAddBtn.hide()
+    refreshMinusBtn.show() if not refreshMinusBtn.isVisible() else refreshMinusBtn.hide()
+    courseClearAddBtn.show() if not courseClearAddBtn.isVisible() else courseClearAddBtn.hide()
+    courseClearMinusBtn.show() if not courseClearMinusBtn.isVisible(
+    ) else courseClearMinusBtn.hide()
+    btnReset.show() if not btnReset.isVisible() else btnReset.hide()
