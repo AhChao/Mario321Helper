@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 
-TemplateFor321 = cv2.convertScaleAbs(cv2.imread("./sampleImgs/321Mapping.png"))
+TemplateFor321 = cv2.convertScaleAbs(
+    cv2.imread("./sampleImgs/321Mapping1.png"))
 TemplateForCourseClear = cv2.convertScaleAbs(
     cv2.imread("./sampleImgs/courseClearMapping.png"))
 
