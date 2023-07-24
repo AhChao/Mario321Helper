@@ -3,8 +3,8 @@ import streamlink
 import configparser
 from imageRecognize import isSimilarToTargetTemplate
 import math
-import time
 from pygrabber.dshow_graph import FilterGraph
+from SIFT import SIFTCompare
 currentStageCount = 0
 currentRefresh = 0
 targetStageCount = 7
@@ -80,7 +80,7 @@ def loggingStreaming(mainWindowObj):
         frame_count += 1
         if isMatchForCourseClearCoolDownNow:
             cooldownTimeForCourseClear += 1
-            if cooldownTimeForCourseClear >= fps*5:
+            if cooldownTimeForCourseClear >= fps*2:
                 cooldownTimeForCourseClear = 0
                 isMatchForCourseClearCoolDownNow = False
 
@@ -99,7 +99,7 @@ def loggingStreaming(mainWindowObj):
             # Compare with 321 template
             if not isMatchFor321CoolDownNow:
                 inputMatchTo321Template = isSimilarToTargetTemplate(
-                    "321Mapping", cv2.convertScaleAbs(frame), 0.3)  # 2 count then plus 1
+                    "321Mapping", cv2.convertScaleAbs(frame), 0.4)  # 2 count then plus 1
                 if inputMatchTo321Template:
                     match321Times += 1
                     if match321Times >= 1:
