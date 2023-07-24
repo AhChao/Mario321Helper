@@ -2,6 +2,7 @@ import cv2
 import streamlink
 import configparser
 from imageRecognize import isSimilarToTargetTemplate
+import math
 currentStageCount = 0
 currentRefresh = 0
 targetStageCount = 7
@@ -29,6 +30,8 @@ def loggingStreaming(mainWindowObj):
     match321Times = 0
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
+    cooldownTimeFor321 = 0
+    isMatchFor321CoolDownNow = False
 
     useLocalVideo = True if config.get(
         'StreamSettings', 'useLocalVideoToTest') == "True" else False
@@ -55,7 +58,7 @@ def loggingStreaming(mainWindowObj):
         cap = cv2.VideoCapture(url)
         fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-    save_interval = 0.4
+    save_interval = 0.1
     frame_count = 0
 
     while cap.isOpened:
@@ -66,21 +69,31 @@ def loggingStreaming(mainWindowObj):
             if cooldownTimeForCourseClear >= fps*5:
                 cooldownTimeForCourseClear = 0
                 isMatchForCourseClearCoolDownNow = False
+                print("Match for Course Clear CD finish")
+
+        if isMatchFor321CoolDownNow:
+            cooldownTimeFor321 += 1
+            if cooldownTimeFor321 >= fps*2:
+                cooldownTimeFor321 = 0
+                isMatchFor321CoolDownNow = False
+                print("Match for 321 CD finish")
 
         if config.get('DisplayConfig', 'debugWithShowFrame') == "True":
             cv2.imshow('frame', frame)
 
+        # print("here", frame_count % (fps * save_interval))
         # Compare Per 0.5 seconds
-        if frame_count % (fps * save_interval) == 0:
+        if math.floor(frame_count % (fps * save_interval)) == 0:
             # Compare with 321 template
             inputMatchTo321Template = isSimilarToTargetTemplate(
                 "./sampleImgs/321Mapping.png", cv2.convertScaleAbs(frame), 0.55)  # 2 count then plus 1
             if inputMatchTo321Template:
-                match321Times += 1
-                if match321Times >= 2:
-                    currentRefresh += 1
-                    mainWindowObj.setTextToLabel(buildDisplayString())
-                    match321Times = 0
+                if not isMatchFor321CoolDownNow:
+                    match321Times += 1
+                    if match321Times >= 2:
+                        currentRefresh += 1
+                        isMatchFor321CoolDownNow = True
+                        mainWindowObj.setTextToLabel(buildDisplayString())
             else:
                 match321Times = 0
             # compare with courseClear, cd for 5 seconds
