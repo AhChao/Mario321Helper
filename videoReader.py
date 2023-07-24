@@ -72,7 +72,7 @@ def loggingStreaming(mainWindowObj):
 
     print("fps", fps)
 
-    save_interval = 0.1
+    save_interval = 0.3
     frame_count = 0
 
     while cap.isOpened:
@@ -91,30 +91,30 @@ def loggingStreaming(mainWindowObj):
                 isMatchFor321CoolDownNow = False
 
         if config.get('DisplayConfig', 'debugWithShowFrame') == "True":
-            cv2.imshow('frame', frame)
+            cv2.imshow('frame', frame)  # may spend about 0.12s to display
 
         # print("here", frame_count % (fps * save_interval))
         # Compare Per 0.5 seconds
         if math.floor(frame_count % (fps * save_interval)) == 0:
             # Compare with 321 template
-            inputMatchTo321Template = isSimilarToTargetTemplate(
-                "321Mapping", cv2.convertScaleAbs(frame), 0.2)  # 2 count then plus 1
-            if inputMatchTo321Template:
-                if not isMatchFor321CoolDownNow:
+            if not isMatchFor321CoolDownNow:
+                inputMatchTo321Template = isSimilarToTargetTemplate(
+                    "321Mapping", cv2.convertScaleAbs(frame), 0.3)  # 2 count then plus 1
+                if inputMatchTo321Template:
                     match321Times += 1
-                    if match321Times >= 2:
+                    if match321Times >= 1:
                         currentRefresh += 1
                         isMatchFor321CoolDownNow = True
                         mainWindowObj.setTextToLabel(buildDisplayString())
-            else:
-                match321Times = 0
+                else:
+                    match321Times = 0
             # compare with courseClear, cd for 5 seconds
-            inputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
-                "courseClearMapping", cv2.convertScaleAbs(frame), 0.1)
-            if inputMatchToCourseClearTemplate:
-                if not isMatchForCourseClearCoolDownNow:
+            if not isMatchForCourseClearCoolDownNow:
+                inputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
+                    "courseClearMapping", cv2.convertScaleAbs(frame), 0.1)
+                if inputMatchToCourseClearTemplate:
                     matchCourseClearTimes += 1
-                    if matchCourseClearTimes >= 2:
+                    if matchCourseClearTimes >= 1:
                         currentStageCount += 1
                         isMatchForCourseClearCoolDownNow = True
                         mainWindowObj.setTextToLabel(buildDisplayString())
