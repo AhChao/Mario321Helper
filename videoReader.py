@@ -104,7 +104,7 @@ def loggingStreaming(mainWindowObj):
                 print("Per Interval:", time.perf_counter())
             # Compare with 321 template
             inputMatchTo321Template = isSimilarToTargetTemplate(
-                "./sampleImgs/321Mapping.png", cv2.convertScaleAbs(frame), 0.55)  # 2 count then plus 1
+                "321Mapping", cv2.convertScaleAbs(frame), 0.55)  # 2 count then plus 1
             if inputMatchTo321Template:
                 if not isMatchFor321CoolDownNow:
                     match321Times += 1
@@ -115,7 +115,9 @@ def loggingStreaming(mainWindowObj):
             else:
                 match321Times = 0
             # compare with courseClear, cd for 5 seconds
-            if isSimilarToTargetTemplate("./sampleImgs/courseClearMapping.png", cv2.convertScaleAbs(frame), 0.1):
+            inputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
+                "courseClearMapping", cv2.convertScaleAbs(frame), 0.1)
+            if inputMatchToCourseClearTemplate:
                 if not isMatchForCourseClearCoolDownNow:
                     matchCourseClearTimes += 1
                     if matchCourseClearTimes >= 2:
