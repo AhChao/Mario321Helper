@@ -3,6 +3,7 @@ import streamlink
 import configparser
 from imageRecognize import isSimilarToTargetTemplate
 import math
+from pygrabber.dshow_graph import FilterGraph
 currentStageCount = 0
 currentRefresh = 0
 targetStageCount = 7
@@ -56,8 +57,17 @@ def loggingStreaming(mainWindowObj):
         url = streams['720p60'].url if "720p60" in streams else streams['480p']
         cap = cv2.VideoCapture(url)
         fps = int(cap.get(cv2.CAP_PROP_FPS))
-    elif streamSource = "LocalVirtualCamera":
-        return
+    elif streamSource == "LocalVirtualCamera":
+        graph = FilterGraph()
+        device = graph.get_input_devices().index("OBS Virtual Camera")
+        cap = cv2.VideoCapture(device)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        fps = 30
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 260*fps)
+
+    print("fps", fps)
 
     save_interval = 0.1
     frame_count = 0
