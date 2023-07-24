@@ -33,16 +33,15 @@ def loggingStreaming(mainWindowObj):
     cooldownTimeFor321 = 0
     isMatchFor321CoolDownNow = False
 
-    useLocalVideo = True if config.get(
-        'StreamSettings', 'useLocalVideoToTest') == "True" else False
+    streamSource = config.get('StreamSettings', 'streamSource')
     fps = 0
-    if useLocalVideo:
+    if streamSource == "LocalVideo":
         cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
         fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.set(cv2.CAP_PROP_POS_FRAMES, 260*fps)
         # 260 for test course clear
         # 285 for refresh
-    else:
+    elif streamSource == "Twitch":
         session = streamlink.Streamlink()
         session.set_option("twitch-low-latency", True)
         session.set_option("hls-live-edge", 1)
@@ -57,6 +56,8 @@ def loggingStreaming(mainWindowObj):
         url = streams['720p60'].url if "720p60" in streams else streams['480p']
         cap = cv2.VideoCapture(url)
         fps = int(cap.get(cv2.CAP_PROP_FPS))
+    elif streamSource = "LocalVirtualCamera":
+        return
 
     save_interval = 0.1
     frame_count = 0
