@@ -3,6 +3,7 @@ import streamlink
 import configparser
 from imageRecognize import isSimilarToTargetTemplate
 import math
+import time
 from pygrabber.dshow_graph import FilterGraph
 currentStageCount = 0
 currentRefresh = 0
@@ -25,6 +26,8 @@ def loggingStreaming(mainWindowObj):
     currentRefresh = 0
     targetStageCount = int(config.get('321Config', 'targetStageCount'))
     maxRefresh = int(config.get('321Config', 'maxRefresh'))
+    timeMeasurementMessage = config.get(
+        'TestSettings', 'timeMeasurementMessage')
     mainWindowObj.setTextToLabel(buildDisplayString())
 
     matchCourseClearTimes = 0
@@ -75,6 +78,8 @@ def loggingStreaming(mainWindowObj):
     while cap.isOpened:
         ret, frame = cap.read()
         frame_count += 1
+        if timeMeasurementMessage == "True":
+            print("Per run in is Opened:", time.perf_counter())
         if isMatchForCourseClearCoolDownNow:
             cooldownTimeForCourseClear += 1
             if cooldownTimeForCourseClear >= fps*5:
@@ -95,6 +100,8 @@ def loggingStreaming(mainWindowObj):
         # print("here", frame_count % (fps * save_interval))
         # Compare Per 0.5 seconds
         if math.floor(frame_count % (fps * save_interval)) == 0:
+            if timeMeasurementMessage == "True":
+                print("Per Interval:", time.perf_counter())
             # Compare with 321 template
             inputMatchTo321Template = isSimilarToTargetTemplate(
                 "./sampleImgs/321Mapping.png", cv2.convertScaleAbs(frame), 0.55)  # 2 count then plus 1
@@ -115,6 +122,8 @@ def loggingStreaming(mainWindowObj):
                         currentStageCount += 1
                         isMatchForCourseClearCoolDownNow = True
                         mainWindowObj.setTextToLabel(buildDisplayString())
+            if timeMeasurementMessage == "True":
+                print("Finish Per Interval:", time.perf_counter())
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
