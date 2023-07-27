@@ -4,7 +4,10 @@ import configparser
 from imageRecognize import isSimilarToTargetTemplate
 import math
 from pygrabber.dshow_graph import FilterGraph
-from SIFT import SIFTCompare
+import threading
+import queue
+import time
+
 currentStageCount = 0
 currentRefresh = 0
 targetStageCount = 7
@@ -74,7 +77,7 @@ def loggingStreaming(mainWindowObj):
 
     save_interval = 0.3
     frame_count = 0
-
+    val321Queue = queue.Queue()
     while cap.isOpened:
         ret, frame = cap.read()
         frame_count += 1
@@ -97,28 +100,39 @@ def loggingStreaming(mainWindowObj):
         # Compare Per 0.5 seconds
         if math.floor(frame_count % (fps * save_interval)) == 0:
             # Compare with 321 template
+            isInputMatchTo321Template = False
+            isInputMatchToCourseClearTemplate = False
+            starttime = time.perf_counter()
             if not isMatchFor321CoolDownNow:
-                inputMatchTo321Template = isSimilarToTargetTemplate(
-                    "321Mapping", cv2.convertScaleAbs(frame), 0.4)  # 2 count then plus 1
-                if inputMatchTo321Template:
-                    match321Times += 1
-                    if match321Times >= 1:
-                        currentRefresh += 1
-                        isMatchFor321CoolDownNow = True
-                        mainWindowObj.setTextToLabel(buildDisplayString())
-                else:
-                    match321Times = 0
-            # compare with courseClear, cd for 5 seconds
+                # threadFor321Detect = threading.Thread(target=isSimilarToTargetTemplate(
+                #    "321Mapping", cv2.convertScaleAbs(frame), 0.4), args=(val321Queue, ))  # 2 count then plus 1)
+                threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
+                    arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), 0.3))  # 2 count then plus 1)
+                threadFor321Detect.start()
             if not isMatchForCourseClearCoolDownNow:
-                inputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
+                isInputMatchToCourseClearTemplate = target = isSimilarToTargetTemplate(
                     "courseClearMapping", cv2.convertScaleAbs(frame), 0.1)
-                if inputMatchToCourseClearTemplate:
-                    matchCourseClearTimes += 1
-                    if matchCourseClearTimes >= 1:
-                        currentStageCount += 1
-                        isMatchForCourseClearCoolDownNow = True
-                        mainWindowObj.setTextToLabel(buildDisplayString())
-
+            if not isMatchFor321CoolDownNow:
+                threadFor321Detect.join()
+            endtime = time.perf_counter()
+            # print(endtime-starttime)
+            if not isMatchFor321CoolDownNow:
+                isInputMatchTo321Template = val321Queue.get()
+            if isInputMatchTo321Template:
+                match321Times += 1
+                if match321Times >= 1:
+                    currentRefresh += 1
+                    isMatchFor321CoolDownNow = True
+                    mainWindowObj.setTextToLabel(buildDisplayString())
+            else:
+                match321Times = 0
+            # compare with courseClear, cd for 5 seconds
+            if isInputMatchToCourseClearTemplate:
+                matchCourseClearTimes += 1
+                if matchCourseClearTimes >= 1:
+                    currentStageCount += 1
+                    isMatchForCourseClearCoolDownNow = True
+                    mainWindowObj.setTextToLabel(buildDisplayString())
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 

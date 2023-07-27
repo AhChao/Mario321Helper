@@ -32,7 +32,7 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     loc = np.where(result <= threshold)
     if templateName != "321Mapping":
         endtime = time.perf_counter()
-        print(endtime - startTime)
+        # print(endtime - startTime)
     for pt in zip(*loc[::-1]):
         if pt != None:
             # special handle for checking 1's position
