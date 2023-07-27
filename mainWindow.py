@@ -3,7 +3,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import *
 from outlineLabel import OutlinedLabel
 from picButton import PicButton
-import sys
 import configparser
 from videoReader import *
 
@@ -17,10 +16,8 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        # setting  the geometry of window
         self.setGeometry(0, 0, 400, 300)
         label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
-        # label = QLabel(" 0 / 15 刷\n  0 / 7 關", self)
         config = configparser.ConfigParser()
         config.read(r'config.ini', encoding="utf8")
         fontSize = int(config.get('DisplayConfig', 'fontSize'))
@@ -30,7 +27,6 @@ class MainWindow(QMainWindow):
                     font-weight: bold;"
         label.setStyleSheet(labelStyle)
         label.adjustSize()
-
         self.label = label
 
         # init buttons

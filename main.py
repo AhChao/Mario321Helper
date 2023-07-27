@@ -4,7 +4,6 @@ from videoReader import loggingStreaming
 import sys
 from PyQt5.QtGui import *
 
-
 app = QApplication(sys.argv)
 app.setWindowIcon(QIcon(QPixmap('/imgs/icon550.png')))
 window = MainWindow()

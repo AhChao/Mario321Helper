@@ -104,8 +104,6 @@ def loggingStreaming(mainWindowObj):
             isInputMatchToCourseClearTemplate = False
             starttime = time.perf_counter()
             if not isMatchFor321CoolDownNow:
-                # threadFor321Detect = threading.Thread(target=isSimilarToTargetTemplate(
-                #    "321Mapping", cv2.convertScaleAbs(frame), 0.4), args=(val321Queue, ))  # 2 count then plus 1)
                 threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
                     arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), 0.3))  # 2 count then plus 1)
                 threadFor321Detect.start()
@@ -135,9 +133,6 @@ def loggingStreaming(mainWindowObj):
                     mainWindowObj.setTextToLabel(buildDisplayString())
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
-    # cap.release()
-    # cv2.destroyAllWindows()
 
 
 def buildDisplayString():

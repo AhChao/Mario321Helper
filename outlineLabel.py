@@ -1,5 +1,4 @@
 # from https://stackoverflow.com/questions/64290561/qlabel-correct-positioning-for-text-outline
-import sys
 import math
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
