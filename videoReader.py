@@ -13,6 +13,8 @@ currentRefresh = 0
 targetStageCount = 7
 maxRefresh = 15
 globalMainWindowObj = ""
+thresholdFor321 = 0.35
+thresholdForCourseClear = 0.1
 
 
 def loggingStreaming(mainWindowObj):
@@ -103,13 +105,15 @@ def loggingStreaming(mainWindowObj):
             isInputMatchTo321Template = False
             isInputMatchToCourseClearTemplate = False
             starttime = time.perf_counter()
+            global thresholdFor321
+            global thresholdForCourseClear
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
-                    arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), 0.3))  # 2 count then plus 1)
+                    arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), thresholdFor321))  # 2 count then plus 1)
                 threadFor321Detect.start()
             if not isMatchForCourseClearCoolDownNow:
                 isInputMatchToCourseClearTemplate = target = isSimilarToTargetTemplate(
-                    "courseClearMapping", cv2.convertScaleAbs(frame), 0.1)
+                    "courseClearMapping", cv2.convertScaleAbs(frame), thresholdForCourseClear)
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect.join()
             endtime = time.perf_counter()

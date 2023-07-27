@@ -15,8 +15,6 @@ TemplateForCourseClear = cv2.convertScaleAbs(
 
 
 def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
-    if templateName != "321Mapping":
-        startTime = time.perf_counter()
     global TemplateFor321
     global TemplateForCourseClear
     template = TemplateFor321 if templateName == "321Mapping" else TemplateForCourseClear
@@ -30,22 +28,19 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     minLocY = minLoc[1]
     # print(minLocX, minLocY)
     loc = np.where(result <= threshold)
-    if templateName != "321Mapping":
-        endtime = time.perf_counter()
-        # print(endtime - startTime)
     for pt in zip(*loc[::-1]):
         if pt != None:
             # special handle for checking 1's position
             global isStreamWithFullScreen
-            if templateName == "321Mapping" and isStreamWithFullScreen and\
-                    ((minLocY < 400 or minLocY > 500) or
-                     (minLocX < 1000 or minLocX > 1150)):
-                # print("Not match well with pos!", templateName, minVal, minLoc)
+            if templateName == "321Mapping" and \
+                ((isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150))) or
+                 (not isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150)))):
+                print("Not match well with pos!", templateName, minVal, minLoc)
                 return False
 
             print("Matching Well with", templateName, minVal, minLoc)
             return True
     else:
-        #        if templateName == "321Mapping":
-        # print("Not match well!", templateName, minVal)
+        # if templateName == "321Mapping":
+        #    print("Not match well!", templateName, minVal)
         return False
