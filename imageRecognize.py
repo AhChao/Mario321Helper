@@ -18,16 +18,18 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     global TemplateFor321
     global TemplateForCourseClear
     template = TemplateFor321 if templateName == "321Mapping" else TemplateForCourseClear
-    large_image = sourceObj
+
+    templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2GRAY)
 
     method = cv2.TM_SQDIFF_NORMED
-    result = cv2.matchTemplate(template, large_image, method)
+    result = cv2.matchTemplate(templateGray, targetGray, method)
 
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(result)
     minLocX = minLoc[0]
     minLocY = minLoc[1]
-    # print(minLocX, minLocY)
     loc = np.where(result <= threshold)
+
     for pt in zip(*loc[::-1]):
         if pt != None:
             # special handle for checking 1's position
