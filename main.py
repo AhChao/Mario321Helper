@@ -5,7 +5,7 @@ import sys
 from PyQt5.QtGui import *
 
 app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(QPixmap('/imgs/icon550.png')))
+app.setWindowIcon(QIcon(QPixmap('/imgs/icon550.ico')))
 window = MainWindow()
 loggingStreaming(window)
-app.exec()
+sys.exit("Program shut down noramlly.")

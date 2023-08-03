@@ -4,6 +4,7 @@ import configparser
 from imageRecognize import isSimilarToTargetTemplate
 import math
 from pygrabber.dshow_graph import FilterGraph
+from win11toast import toast
 import threading
 import queue
 import time
@@ -74,13 +75,22 @@ def loggingStreaming(mainWindowObj):
         fps = int(cap.get(cv2.CAP_PROP_FPS))
         fps = 30
         cap.set(cv2.CAP_PROP_POS_FRAMES, 260*fps)
+        ret, checkingSource = cap.read()
+        obsSourceCheckingResult = cv2.matchTemplate(cv2.convertScaleAbs(cv2.imread(
+            "./imgs/obsNoSource.png")), checkingSource, cv2.TM_SQDIFF_NORMED)
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(obsSourceCheckingResult)
+        if minVal <= 0.01:
+            toast(
+                "Obs Virtual Camera 未開啟",
+                "影像來源設定為使用 Obs Virtual Camera，但未正確讀取到畫面。(Obs回傳為待機影像)")
+            return
 
     print("fps", fps)
 
     save_interval = 0.3
     frame_count = 0
     val321Queue = queue.Queue()
-    while cap.isOpened:
+    while cap.isOpened():
         ret, frame = cap.read()
         frame_count += 1
         if isMatchForCourseClearCoolDownNow:
@@ -137,6 +147,10 @@ def loggingStreaming(mainWindowObj):
                     mainWindowObj.setTextToLabel(buildDisplayString())
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+    toast(
+        "影像來源已中斷",
+        "本來使用的影像來源已中斷，請重新確認後再運行程式")
 
 
 def buildDisplayString():
