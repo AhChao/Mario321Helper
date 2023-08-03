@@ -18,6 +18,13 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     global TemplateFor321
     global TemplateForCourseClear
     template = TemplateFor321 if templateName == "321Mapping" else TemplateForCourseClear
+    if templateName == "321Mapping":
+        x = 1000
+        y = 400
+        h = 300
+        w = 300
+        sourceObj = sourceObj[y:y+h, x:x+w]
+        mask = cv2.imread("./sampleImgs/321Mapping_mask.png")
 
     templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
     targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2GRAY)
@@ -34,11 +41,11 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
         if pt != None:
             # special handle for checking 1's position
             global isStreamWithFullScreen
-            if templateName == "321Mapping" and \
-                ((isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150))) or
-                 (not isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150)))):
-                print("Not match well with pos!", templateName, minVal, minLoc)
-                return False
+            # if templateName == "321Mapping" and \
+            #     ((isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150))) or
+            #      (not isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150)))):
+            #     print("Not match well with pos!", templateName, minVal, minLoc)
+            #     return False
 
             print("Matching Well with", templateName, minVal, minLoc)
             return True
