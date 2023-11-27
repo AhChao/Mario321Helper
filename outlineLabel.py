@@ -46,7 +46,7 @@ class OutlinedLabel(QLabel):
         return super().minimumSizeHint() + QSize(w, w)
 
     def paintEvent(self, event):
-        w = self.outlineThickness()
+        w = int(self.outlineThickness())
         rect = self.rect()
         metrics = QFontMetrics(self.font())
         tr = metrics.boundingRect(self.text()).adjusted(0, 0, w, w)

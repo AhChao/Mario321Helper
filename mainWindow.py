@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
             refreshMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             refreshMinusBtn.resize(btnSize, btnSize)
-            refreshMinusBtn.move(fontSize*7.5, btnBaseLine)
+            refreshMinusBtn.move(int(fontSize*7.5), btnBaseLine)
             refreshMinusBtn.clicked.connect(
                 lambda: operateOnCurrentRefreshCount(-1))
             refreshMinusBtn.setObjectName("refreshMinusBtn")
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
             courseClearMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             courseClearMinusBtn.resize(btnSize, btnSize)
-            courseClearMinusBtn.move(fontSize*15.5, btnBaseLine)
+            courseClearMinusBtn.move(int(fontSize*15.5), btnBaseLine)
             courseClearMinusBtn.clicked.connect(
                 lambda: operateOnCurrentStageCount(-1))
             courseClearMinusBtn.setObjectName("courseClearMinusBtn")
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
 
             btnReset = PicButton(QPixmap('./imgs/reset.png'), self)
             btnReset.resize(fontSize*2, fontSize*2)
-            btnReset.move(fontSize*20.5, 10)
+            btnReset.move(int(fontSize*20.5), 10)
             btnReset.clicked.connect(resetCurrentValues)
             btnReset.setObjectName("btnReset")
 
