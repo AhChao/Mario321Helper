@@ -10,6 +10,8 @@ isStreamWithFullScreen = config.get(
 
 TemplateFor321 = cv2.convertScaleAbs(
     cv2.imread("./sampleImgs/321Mapping.png" if not isStreamWithFullScreen else "./sampleImgs/321Mapping_fullScreen.png"))
+TemplateForCourseTitle = cv2.convertScaleAbs(
+    cv2.imread("./sampleImgs/courseTitleMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseTitleMapping_fullScreen.png"))
 TemplateForCourseClear = cv2.convertScaleAbs(
     cv2.imread("./sampleImgs/courseClearMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseClearMapping_fullScreen.png"))
 
@@ -17,17 +19,28 @@ TemplateForCourseClear = cv2.convertScaleAbs(
 def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     global TemplateFor321
     global TemplateForCourseClear
-    template = TemplateFor321 if templateName == "321Mapping" else TemplateForCourseClear
+    global isStreamWithFullScreen
+    template = TemplateForCourseTitle if templateName == "321Mapping" else TemplateForCourseClear
     if templateName == "321Mapping":
-        x = 1000
-        y = 400
-        h = 300
-        w = 300
-        sourceObj = sourceObj[y:y+h, x:x+w]
-        mask = cv2.imread("./sampleImgs/321Mapping_mask.png")
+        if isStreamWithFullScreen:
+            x = 0
+            y = 0
+            h = 500
+            w = 1600
+        else:
+            x = 0
+            y = 200
+            h = 300
+            w = 1000
 
-    templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-    targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2GRAY)
+        sourceObj = sourceObj[y:y+h, x:x+w]
+
+    if templateName == "321Mapping":
+        templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2RGB)
+        targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2RGB)
+    else:
+        templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+        targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2GRAY)
 
     method = cv2.TM_SQDIFF_NORMED
     result = cv2.matchTemplate(templateGray, targetGray, method)
@@ -40,7 +53,6 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     for pt in zip(*loc[::-1]):
         if pt != None:
             # special handle for checking 1's position
-            global isStreamWithFullScreen
             # if templateName == "321Mapping" and \
             #     ((isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150))) or
             #      (not isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150)))):

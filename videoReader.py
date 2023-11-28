@@ -2,6 +2,7 @@ import cv2
 import streamlink
 import configparser
 from imageRecognize import isSimilarToTargetTemplate
+from textRecognize import recognizeTheImage
 import math
 from pygrabber.dshow_graph import FilterGraph
 from win11toast import toast
@@ -14,8 +15,9 @@ currentRefresh = 0
 targetStageCount = 7
 maxRefresh = 15
 globalMainWindowObj = ""
-thresholdFor321 = 0.35
+thresholdFor321 = 0.03
 thresholdForCourseClear = 0.1
+coursesList = set()
 
 
 def loggingStreaming(mainWindowObj):
@@ -32,6 +34,8 @@ def loggingStreaming(mainWindowObj):
     currentRefresh = 0
     targetStageCount = int(config.get('321Config', 'targetStageCount'))
     maxRefresh = int(config.get('321Config', 'maxRefresh'))
+    isStreamWithFullScreen = config.get(
+        'StreamSettings', 'isStreamWithFullScreen') == "True"
     timeMeasurementMessage = config.get(
         'TestSettings', 'timeMeasurementMessage')
     mainWindowObj.setTextToLabel(buildDisplayString())
@@ -87,7 +91,7 @@ def loggingStreaming(mainWindowObj):
 
     print("fps", fps)
 
-    save_interval = 0.3
+    save_interval = 1.5  # before 0.3 when use 321 icon
     frame_count = 0
     val321Queue = queue.Queue()
     while cap.isOpened():
@@ -131,11 +135,19 @@ def loggingStreaming(mainWindowObj):
             if not isMatchFor321CoolDownNow:
                 isInputMatchTo321Template = val321Queue.get()
             if isInputMatchTo321Template:
-                match321Times += 1
-                if match321Times >= 1:
-                    currentRefresh += 1
-                    isMatchFor321CoolDownNow = True
-                    mainWindowObj.setTextToLabel(buildDisplayString())
+                textRecognized = recognizeTheImage(
+                    frame, isStreamWithFullScreen)
+                if textRecognized != "" and textRecognized != None:
+                    coursesList.add(textRecognized)
+                    print("Reco : ", textRecognized,
+                          len(coursesList), coursesList)
+                    match321Times = max(
+                        len(coursesList) - matchCourseClearTimes - 1, 0)
+                    if match321Times >= 1:
+                        currentRefresh = max(
+                            len(coursesList) - matchCourseClearTimes - 1, 0)
+                        isMatchFor321CoolDownNow = True
+                        mainWindowObj.setTextToLabel(buildDisplayString())
             else:
                 match321Times = 0
             # compare with courseClear, cd for 5 seconds
