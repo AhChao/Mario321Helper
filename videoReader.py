@@ -9,6 +9,7 @@ from win11toast import toast
 import threading
 import queue
 import time
+import sys
 
 currentStageCount = 0
 currentRefresh = 0
@@ -186,6 +187,10 @@ def operateOnCurrentStageCount(val):
     currentStageCount += val
     global globalMainWindowObj
     globalMainWindowObj.setTextToLabel(buildDisplayString())
+
+
+def exitTheProgram():
+    sys.exit("Program shut down noramlly by clicked the exitbtn.")
 
 
 def resetCurrentValues():

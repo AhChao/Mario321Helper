@@ -74,6 +74,12 @@ class MainWindow(QMainWindow):
             btnReset.clicked.connect(resetCurrentValues)
             btnReset.setObjectName("btnReset")
 
+            btnExit = PicButton(QPixmap('./imgs/exitBtn.png'), self)
+            btnExit.resize(fontSize*2, fontSize*2)
+            btnExit.move(int(fontSize*23), 10)
+            btnExit.clicked.connect(exitTheProgram)
+            btnExit.setObjectName("btnExit")
+
         self.show()
 
     def mousePressEvent(self, e):
