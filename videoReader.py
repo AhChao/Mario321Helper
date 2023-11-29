@@ -75,8 +75,12 @@ def loggingStreaming(mainWindowObj):
         graph = FilterGraph()
         device = graph.get_input_devices().index("OBS Virtual Camera")
         cap = cv2.VideoCapture(device)
+        print("Current Virtual Camera Size - width : " +
+              str(int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))) + " height : " + str(int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        print("Reszie Virtual Camera to - width : " +
+              str(int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))) + " height : " + str(int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
         fps = int(cap.get(cv2.CAP_PROP_FPS))
         fps = 30
         cap.set(cv2.CAP_PROP_POS_FRAMES, 260*fps)
@@ -85,12 +89,13 @@ def loggingStreaming(mainWindowObj):
             "./imgs/obsNoSource.png")), checkingSource, cv2.TM_SQDIFF_NORMED)
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(obsSourceCheckingResult)
         if minVal <= 0.01:
+            print("Error : OBS Virtual Camera not opened or cloud not be found.")
             toast(
                 "Obs Virtual Camera 未開啟",
                 "影像來源設定為使用 Obs Virtual Camera，但未正確讀取到畫面。(Obs回傳為待機影像)")
             return
 
-    print("fps", fps)
+    print("fps : " + fps)
 
     save_interval = 1.5  # before 0.3 when use 321 icon
     frame_count = 0
@@ -161,6 +166,7 @@ def loggingStreaming(mainWindowObj):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    print("Error : Source is terminated, please check again then restart the program.")
     toast(
         "影像來源已中斷",
         "本來使用的影像來源已中斷，請重新確認後再運行程式")
