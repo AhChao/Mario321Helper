@@ -5,6 +5,7 @@ from outlineLabel import OutlinedLabel
 from picButton import PicButton
 import configparser
 from videoReader import *
+import sys
 
 
 class MainWindow(QMainWindow):
@@ -99,6 +100,10 @@ class MainWindow(QMainWindow):
         self.label.setText(displayStr)
         self.label.adjustSize()
         self.resize(1920, 500)
+
+    def closeEvent(self, event):
+        print("Main window is closed, shut down the whole program.")
+        sys.exit("Program shut down noramlly.")
 
 
 def toggleEditBtns(mainWindowObj):
