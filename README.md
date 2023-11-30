@@ -29,13 +29,14 @@
 
 - 自行用 pyinstaller 打包
   或
-- 下載我打包好的 exe, 放在 [onedrive 空間](https://1drv.ms/u/s!AnNN4hXDvIX6gcRz3HdylEpORLiWzQ?e=Ztnpu6)，下載後解壓縮(7z)
+- 下載我打包好的 exe, 放在 [onedrive 空間](https://1drv.ms/u/s!AnNN4hXDvIX6gcR4reUh3FYsLLceMQ?e=3AyQqU)，下載後解壓縮(7z)
 
 1. 預設設置是使用 OBS 的 Virtual Camera，先到 OBS 設置好你的遊戲場景
 2. 點擊右下角的 Start Virtual Camera(相當於用一個虛擬鏡頭在照著這個 Scene ，給程式讀取用的)  
    ![obsvm](./imgs/obsvm.png)
-3. 解壓縮後點擊資料夾裡的 main.exe，運行時間依電腦設備可能啟動時間會有差異(要稍微等一下)
+3. 解壓縮後點擊資料夾裡的 main.exe，運行時間依電腦設備可能啟動時間會有差異(要稍微等一下，初次可能慢一點，一般啟動約要 1 分鐘 - 2 分鐘)
 4. 看到視窗出來了就是正確運行了
+5. 程式是使用換關的關卡編號來偵測刷數，放置的時候不要遮擋到關卡刷數的位置。
 
 ## 圖片素材來源
 
