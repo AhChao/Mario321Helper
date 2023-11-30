@@ -31,8 +31,8 @@ def loggingStreaming(mainWindowObj):
     global currentRefresh
     global targetStageCount
     global maxRefresh
-    currentStageCount = 0
-    currentRefresh = 0
+    isDebugWithCompareFrame = config.get(
+        'DisplayConfig', 'debugWithCompareFrame') == "True"
     targetStageCount = int(config.get('321Config', 'targetStageCount'))
     maxRefresh = int(config.get('321Config', 'maxRefresh'))
     isStreamWithFullScreen = config.get(
@@ -95,7 +95,7 @@ def loggingStreaming(mainWindowObj):
                 "影像來源設定為使用 Obs Virtual Camera，但未正確讀取到畫面。(Obs回傳為待機影像)")
             return
 
-    print("fps : " + fps)
+    print("fps : " + str(fps))
 
     save_interval = 1.5  # before 0.3 when use 321 icon
     frame_count = 0
@@ -142,7 +142,7 @@ def loggingStreaming(mainWindowObj):
                 isInputMatchTo321Template = val321Queue.get()
             if isInputMatchTo321Template:
                 textRecognized = recognizeTheImage(
-                    frame, isStreamWithFullScreen)
+                    frame, isStreamWithFullScreen, isDebugWithCompareFrame)
                 if textRecognized != "" and textRecognized != None:
                     coursesList.add(textRecognized)
                     print("Reco : ", textRecognized,

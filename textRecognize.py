@@ -10,13 +10,14 @@ def is_valid_courseName(input_string):
     return bool(pattern.match(input_string))
 
 
-def recognizeTheImage(source, isFullScreen):
+def recognizeTheImage(source, isFullScreen, isDebugWithCompareFrame):
     reader = easyocr.Reader(['en'])
     if isFullScreen:
         roi = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)[250:400, 0:500]
     else:
         roi = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)[250:400, 350:550]
-    # cv2.imshow('EasyOCR', roi) # check mapping course id area
+    if isDebugWithCompareFrame:
+        cv2.imshow('EasyOCR', roi)  # check mapping course id area
     result = reader.readtext(roi)
 
     for idx, item in enumerate(result):
