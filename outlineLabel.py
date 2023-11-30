@@ -21,7 +21,7 @@ class OutlinedLabel(QLabel):
         self.mode = state
 
     def outlineThickness(self):
-        return self.w * self.font().pointSize() if self.mode else self.w
+        return self.w * self.font().pointSize()*2 if self.mode else self.w*2
 
     def setOutlineThickness(self, value):
         self.w = value

@@ -13,6 +13,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         config = configparser.ConfigParser()
         config.read(r'config.ini', encoding="utf8")
+        isDynamicDisplayMode = config.get(
+            'DisplayConfig', 'isDynamicDisplayMode') == "True"
 
         self.setWindowFlag(Qt.FramelessWindowHint)
         if config.get('DisplayConfig', 'isBackgroundTransparent') == "True":
@@ -31,14 +33,14 @@ class MainWindow(QMainWindow):
         label.setStyleSheet(labelStyle)
         label.adjustSize()
         self.label = label
+        self.resize(450, 80)
 
         # init buttons
         if config.get('DisplayConfig', 'displayModifyButton') == "True":
-            btnSize = fontSize
+            btnSize = 25
             btnBaseLine = fontSize + 45
             refreshAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
             refreshAddBtn.resize(btnSize, btnSize)
-            refreshAddBtn.move(fontSize*6, btnBaseLine)
             refreshAddBtn.clicked.connect(
                 lambda: operateOnCurrentRefreshCount(1))
             refreshAddBtn.setObjectName("refreshAddBtn")
@@ -46,14 +48,12 @@ class MainWindow(QMainWindow):
             refreshMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             refreshMinusBtn.resize(btnSize, btnSize)
-            refreshMinusBtn.move(int(fontSize*7.5), btnBaseLine)
             refreshMinusBtn.clicked.connect(
                 lambda: operateOnCurrentRefreshCount(-1))
             refreshMinusBtn.setObjectName("refreshMinusBtn")
 
             courseClearAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
             courseClearAddBtn.resize(btnSize, btnSize)
-            courseClearAddBtn.move(fontSize*14, btnBaseLine)
             courseClearAddBtn.clicked.connect(
                 lambda: operateOnCurrentStageCount(1))
             courseClearAddBtn.setObjectName("courseClearAddBtn")
@@ -61,27 +61,42 @@ class MainWindow(QMainWindow):
             courseClearMinusBtn = PicButton(
                 QPixmap('./imgs/subtractBtn.png'), self)
             courseClearMinusBtn.resize(btnSize, btnSize)
-            courseClearMinusBtn.move(int(fontSize*15.5), btnBaseLine)
             courseClearMinusBtn.clicked.connect(
                 lambda: operateOnCurrentStageCount(-1))
             courseClearMinusBtn.setObjectName("courseClearMinusBtn")
 
             btnEdit = PicButton(QPixmap('./imgs/editBtn.png'), self)
-            btnEdit.resize(fontSize*2, fontSize*2)
-            btnEdit.move(fontSize*18, 10)
+            btnEdit.resize(btnSize, btnSize)
             btnEdit.clicked.connect(lambda: toggleEditBtns(self))
 
             btnReset = PicButton(QPixmap('./imgs/reset.png'), self)
-            btnReset.resize(fontSize*2, fontSize*2)
-            btnReset.move(int(fontSize*20.5), 10)
+            btnReset.resize(btnSize, btnSize)
             btnReset.clicked.connect(resetCurrentValues)
             btnReset.setObjectName("btnReset")
 
             btnExit = PicButton(QPixmap('./imgs/exitBtn.png'), self)
-            btnExit.resize(fontSize*2, fontSize*2)
-            btnExit.move(int(fontSize*23), 10)
+            btnExit.resize(btnSize, btnSize)
             btnExit.clicked.connect(exitTheProgram)
             btnExit.setObjectName("btnExit")
+
+            if isDynamicDisplayMode:
+                refreshAddBtn.move(fontSize*6, btnBaseLine)
+                refreshMinusBtn.move(int(fontSize*7.5), btnBaseLine)
+                courseClearAddBtn.move(fontSize*14, btnBaseLine)
+                courseClearMinusBtn.move(int(fontSize*15.5), btnBaseLine)
+                btnEdit.move(fontSize*18, 10)
+                btnReset.move(int(fontSize*20.5), 10)
+                btnExit.move(int(fontSize*23), 10)
+            else:
+                baseLine = 45
+                functinoBtnBaseLine = 5
+                refreshAddBtn.move(80, baseLine)
+                refreshMinusBtn.move(119, baseLine)
+                courseClearAddBtn.move(210, baseLine)
+                courseClearMinusBtn.move(240, baseLine)
+                btnReset.move(330, functinoBtnBaseLine)
+                btnEdit.move(360, functinoBtnBaseLine)
+                btnExit.move(390, functinoBtnBaseLine)
 
         self.show()
 
@@ -100,8 +115,13 @@ class MainWindow(QMainWindow):
 
     def setTextToLabel(self, displayStr):
         self.label.setText(displayStr)
-        self.label.adjustSize()
-        self.resize(1920, 500)
+        config = configparser.ConfigParser()
+        config.read(r'config.ini', encoding="utf8")
+        if config.get('DisplayConfig', 'isDynamicDisplayMode') == "True":
+            self.label.adjustSize()
+        else:
+            self.label.resize(350, 40)
+        # self.adjustSize()
 
     def closeEvent(self, event):
         print("Main window is closed, shut down the whole program.")
