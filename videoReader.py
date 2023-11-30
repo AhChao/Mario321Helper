@@ -138,24 +138,6 @@ def loggingStreaming(mainWindowObj):
                 threadFor321Detect.join()
             endtime = time.perf_counter()
             # print(endtime-starttime)
-            if not isMatchFor321CoolDownNow:
-                isInputMatchTo321Template = val321Queue.get()
-            if isInputMatchTo321Template:
-                textRecognized = recognizeTheImage(
-                    frame, isStreamWithFullScreen, isDebugWithCompareFrame)
-                if textRecognized != "" and textRecognized != None:
-                    coursesList.add(textRecognized)
-                    print("Reco : ", textRecognized,
-                          len(coursesList), coursesList)
-                    match321Times = max(
-                        len(coursesList) - matchCourseClearTimes - 1, 0)
-                    if match321Times >= 1:
-                        currentRefresh = max(
-                            len(coursesList) - matchCourseClearTimes - 1, 0)
-                        isMatchFor321CoolDownNow = True
-                        mainWindowObj.setTextToLabel(buildDisplayString())
-            else:
-                match321Times = 0
             # compare with courseClear, cd for 5 seconds
             if isInputMatchToCourseClearTemplate:
                 matchCourseClearTimes += 1
@@ -163,6 +145,20 @@ def loggingStreaming(mainWindowObj):
                     currentStageCount += 1
                     isMatchForCourseClearCoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
+            if not isMatchFor321CoolDownNow:
+                isInputMatchTo321Template = val321Queue.get()
+            if isInputMatchTo321Template:
+                textRecognized = recognizeTheImage(
+                    frame, isStreamWithFullScreen, isDebugWithCompareFrame)
+                if textRecognized != "" and textRecognized != None:
+                    coursesList.add(textRecognized)
+                    print("Today Courses : " + str(coursesList))
+                    currentRefresh = max(
+                        len(coursesList) - currentStageCount - 1, 0)
+                    isMatchFor321CoolDownNow = True
+                    mainWindowObj.setTextToLabel(buildDisplayString())
+            else:
+                match321Times = 0
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -181,16 +177,43 @@ def buildDisplayString():
         str(currentStageCount) + " / " + str(targetStageCount) + " 關"
 
 
+def addFakeStage():
+    global coursesList
+    global currentRefresh
+    targetCount = currentRefresh + currentStageCount + 1
+    i = 0
+    while len(coursesList) < targetCount:
+        fakeName = "fake stage"+str(i)
+        while fakeName in coursesList:
+            i += 1
+            fakeName = "fake stage"+str(i)
+        coursesList.add(fakeName)
+
+
 def operateOnCurrentRefreshCount(val):
     global currentRefresh
     currentRefresh += val
     global globalMainWindowObj
+    global coursesList
+    if currentRefresh < 0:
+        currentRefresh = 0
+        return
+    if val < 0:
+        val *= -1
+        while (val > 0 and len(coursesList) > 0):
+            coursesList.pop()
+            val -= 1
+    else:
+        addFakeStage()
     globalMainWindowObj.setTextToLabel(buildDisplayString())
 
 
 def operateOnCurrentStageCount(val):
     global currentStageCount
     currentStageCount += val
+    if currentStageCount < 0:
+        currentStageCount = 0
+        return
     global globalMainWindowObj
     globalMainWindowObj.setTextToLabel(buildDisplayString())
 
@@ -202,8 +225,10 @@ def exitTheProgram():
 def resetCurrentValues():
     global currentStageCount
     global currentRefresh
+    global coursesList
     currentRefresh = 0
     currentStageCount = 0
+    coursesList = set()
 
     global maxRefresh
     global targetStageCount
