@@ -60,7 +60,7 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
             #     return False
 
             print("Matching Well with " + templateName +
-                  " , " + minVal + " , " + minLoc)
+                  " , " + str(minVal) + " , " + str(minLoc))
             return True
     else:
         # if templateName == "321Mapping":

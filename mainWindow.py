@@ -11,19 +11,21 @@ import sys
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.setStyleSheet("background-color: rgba(255,255,255,0.5);")
-        self.setWindowTitle("Mario321Helper")
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-
-        self.setGeometry(0, 0, 400, 300)
-        label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
         config = configparser.ConfigParser()
         config.read(r'config.ini', encoding="utf8")
+
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        if config.get('DisplayConfig', 'isBackgroundTransparent') == "True":
+            self.setStyleSheet("background-color: rgba(255,255,255,0.5);")
+            self.setAttribute(Qt.WA_TranslucentBackground)
+        else:
+            self.setStyleSheet(
+                r"background-image: url('./imgs/background_solid.png');")
+        self.setWindowTitle("Mario321Helper")
+        label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
+
         fontSize = int(config.get('DisplayConfig', 'fontSize'))
-        labelStyle = "background-color: rgba(255,255,255,0);\
-                    font-family : Microsoft JhengHei;\
+        labelStyle = "font-family : Microsoft JhengHei;\
                     font-size: "+str(fontSize)+"pt;\
                     font-weight: bold;"
         label.setStyleSheet(labelStyle)
@@ -86,15 +88,15 @@ class MainWindow(QMainWindow):
     def mousePressEvent(self, e):
         self.previous_pos = e.globalPos()
 
-    def mouseMoveEvent(self, e):
-        delta = e.globalPos() - self.previous_pos
-        self.move(self.x() + delta.x(), self.y()+delta.y())
-        self.previous_pos = e.globalPos()
-        self._drag_active = True
+    # def mouseMoveEvent(self, e):
+    #     delta = e.globalPos() - self.previous_pos
+    #     self.move(self.x() + delta.x(), self.y()+delta.y())
+    #     self.previous_pos = e.globalPos()
+    #     self._drag_active = True
 
-    def mouseReleaseEvent(self, e):
-        if self._drag_active:
-            self._drag_active = False
+    # def mouseReleaseEvent(self, e):
+    #     if self._drag_active:
+    #         self._drag_active = False
 
     def setTextToLabel(self, displayStr):
         self.label.setText(displayStr)
