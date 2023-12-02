@@ -100,19 +100,6 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    def mousePressEvent(self, e):
-        self.previous_pos = e.globalPos()
-
-    # def mouseMoveEvent(self, e):
-    #     delta = e.globalPos() - self.previous_pos
-    #     self.move(self.x() + delta.x(), self.y()+delta.y())
-    #     self.previous_pos = e.globalPos()
-    #     self._drag_active = True
-
-    # def mouseReleaseEvent(self, e):
-    #     if self._drag_active:
-    #         self._drag_active = False
-
     def setTextToLabel(self, displayStr):
         self.label.setText(displayStr)
         config = configparser.ConfigParser()

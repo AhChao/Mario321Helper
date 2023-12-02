@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import configparser
-import time
 
 config = configparser.ConfigParser()
 config.read(r'config.ini', encoding="utf8")
@@ -52,17 +51,8 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
 
     for pt in zip(*loc[::-1]):
         if pt != None:
-            # special handle for checking 1's position
-            # if templateName == "321Mapping" and \
-            #     ((isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150))) or
-            #      (not isStreamWithFullScreen and ((minLocY < 400 or minLocY > 500) or (minLocX < 1000 or minLocX > 1150)))):
-            #     print("Not match well with pos!", templateName, minVal, minLoc)
-            #     return False
-
             print("Matching Well with " + templateName +
                   " , " + str(minVal) + " , " + str(minLoc))
             return True
     else:
-        # if templateName == "321Mapping":
-        #    print("Not match well!", templateName, minVal)
         return False

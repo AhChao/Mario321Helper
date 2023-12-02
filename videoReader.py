@@ -8,7 +8,6 @@ from pygrabber.dshow_graph import FilterGraph
 from win11toast import toast
 import threading
 import queue
-import time
 import sys
 
 currentStageCount = 0
@@ -37,12 +36,9 @@ def loggingStreaming(mainWindowObj):
     maxRefresh = int(config.get('321Config', 'maxRefresh'))
     isStreamWithFullScreen = config.get(
         'StreamSettings', 'isStreamWithFullScreen') == "True"
-    timeMeasurementMessage = config.get(
-        'TestSettings', 'timeMeasurementMessage')
     mainWindowObj.setTextToLabel(buildDisplayString())
 
     matchCourseClearTimes = 0
-    match321Times = 0
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
     cooldownTimeFor321 = 0
@@ -118,13 +114,11 @@ def loggingStreaming(mainWindowObj):
         if config.get('DisplayConfig', 'debugWithShowFrame') == "True":
             cv2.imshow('frame', frame)  # may spend about 0.12s to display
 
-        # print("here", frame_count % (fps * save_interval))
         # Compare Per 0.5 seconds
         if math.floor(frame_count % (fps * save_interval)) == 0:
             # Compare with 321 template
             isInputMatchTo321Template = False
             isInputMatchToCourseClearTemplate = False
-            starttime = time.perf_counter()
             global thresholdFor321
             global thresholdForCourseClear
             if not isMatchFor321CoolDownNow:
@@ -136,8 +130,6 @@ def loggingStreaming(mainWindowObj):
                     "courseClearMapping", cv2.convertScaleAbs(frame), thresholdForCourseClear)
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect.join()
-            endtime = time.perf_counter()
-            # print(endtime-starttime)
             # compare with courseClear, cd for 5 seconds
             if isInputMatchToCourseClearTemplate:
                 matchCourseClearTimes += 1
@@ -157,8 +149,6 @@ def loggingStreaming(mainWindowObj):
                         len(coursesList) - currentStageCount - 1, 0)
                     isMatchFor321CoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
-            else:
-                match321Times = 0
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
