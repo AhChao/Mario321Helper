@@ -1,39 +1,44 @@
-import cv2
-import streamlink
-import configparser
-from imageRecognize import isSimilarToTargetTemplate
-from textRecognize import recognizeTheImage
-import math
-from pygrabber.dshow_graph import FilterGraph
-from win11toast import toast
+# python builtin lib
 import threading
 import queue
 import sys
+import math
 
-currentStageCount = 0
-currentRefresh = 0
-targetStageCount = 7
-maxRefresh = 15
-globalMainWindowObj = ""
-thresholdFor321 = 0.03
-thresholdForCourseClear = 0.1
-coursesList = set()
+# pip install lib
+import cv2
+import streamlink
+import configparser
+from pygrabber.dshow_graph import FilterGraph
+from win11toast import toast
+
+# local py file
+from imageRecognize import isSimilarToTargetTemplate
+from textRecognize import recognizeTheImage
+import globalVar as gl
+
+gl._init()
+
+
+def initSettingValues():
+    config = configparser.ConfigParser()
+    config.read(r'config.ini', encoding="utf8")
+    gl.set_value("currentStageCount", 0)
+    gl.set_value("currentRefresh", 0)
+    gl.set_value("targetStageCount", int(
+        config.get('321Config', 'targetStageCount')))
+    gl.set_value("maxRefresh", int(config.get('321Config', 'maxRefresh')))
+    gl.set_value("globalMainWindowObj", "")
+    gl.set_value("thresholdFor321", 0)
+    gl.set_value("thresholdForCourseClear", 0)
+    gl.set_value("coursesList", set())
 
 
 def loggingStreaming(mainWindowObj):
-    global globalMainWindowObj
-    globalMainWindowObj = mainWindowObj
+    gl.set_value("globalMainWindowObj", mainWindowObj)
     config = configparser.ConfigParser()
     config.read(r'config.ini', encoding="utf8")
-
-    global currentStageCount
-    global currentRefresh
-    global targetStageCount
-    global maxRefresh
     isDebugWithCompareFrame = config.get(
         'DisplayConfig', 'debugWithCompareFrame') == "True"
-    targetStageCount = int(config.get('321Config', 'targetStageCount'))
-    maxRefresh = int(config.get('321Config', 'maxRefresh'))
     isStreamWithFullScreen = config.get(
         'StreamSettings', 'isStreamWithFullScreen') == "True"
     mainWindowObj.setTextToLabel(buildDisplayString())
@@ -119,14 +124,14 @@ def loggingStreaming(mainWindowObj):
             # Compare with 321 template
             isInputMatchTo321Template = False
             isInputMatchToCourseClearTemplate = False
-            global thresholdFor321
-            global thresholdForCourseClear
+            thresholdFor321 = gl.get_value("thresholdFor321")
+            thresholdForCourseClear = gl.get_value("thresholdForCourseClear")
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
                     arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), thresholdFor321))  # 2 count then plus 1)
                 threadFor321Detect.start()
             if not isMatchForCourseClearCoolDownNow:
-                isInputMatchToCourseClearTemplate = target = isSimilarToTargetTemplate(
+                isInputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
                     "courseClearMapping", cv2.convertScaleAbs(frame), thresholdForCourseClear)
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect.join()
@@ -143,10 +148,11 @@ def loggingStreaming(mainWindowObj):
                 textRecognized = recognizeTheImage(
                     frame, isStreamWithFullScreen, isDebugWithCompareFrame)
                 if textRecognized != "" and textRecognized != None:
+                    coursesList = gl.get_value("coursesList")
                     coursesList.add(textRecognized)
                     print("Today Courses : " + str(coursesList))
-                    currentRefresh = max(
-                        len(coursesList) - currentStageCount - 1, 0)
+                    gl.set_value("currentRefresh", max(
+                        len(coursesList) - currentStageCount - 1, 0))
                     isMatchFor321CoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -159,17 +165,15 @@ def loggingStreaming(mainWindowObj):
 
 
 def buildDisplayString():
-    global currentRefresh
-    global maxRefresh
-    global currentStageCount
-    global targetStageCount
-    return str(currentRefresh)+" / " + str(maxRefresh) + " 刷  " + \
-        str(currentStageCount) + " / " + str(targetStageCount) + " 關"
+    return str(gl.get_value("currentRefresh"))+" / " + \
+        str(gl.get_value("maxRefresh")) + " 刷  " + \
+        str(gl.get_value("currentStageCount")) + " / " + \
+        str(gl.get_value("targetStageCount")) + " 關"
 
 
 def addFakeStage():
-    global coursesList
-    global currentRefresh
+    coursesList = gl.get_value("coursesList")
+    currentRefresh = gl.get_value("currentRefresh")
     targetCount = currentRefresh + currentStageCount + 1
     i = 0
     while len(coursesList) < targetCount:
@@ -181,12 +185,10 @@ def addFakeStage():
 
 
 def operateOnCurrentRefreshCount(val):
-    global currentRefresh
+    currentRefresh = gl.get_value("currentRefresh")
     currentRefresh += val
-    global globalMainWindowObj
-    global coursesList
+    coursesList = gl.get_value("coursesList")
     if currentRefresh < 0:
-        currentRefresh = 0
         return
     if val < 0:
         val *= -1
@@ -195,37 +197,33 @@ def operateOnCurrentRefreshCount(val):
             val -= 1
     else:
         addFakeStage()
-    globalMainWindowObj.setTextToLabel(buildDisplayString())
+    gl.get_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
 
 
 def operateOnCurrentStageCount(val):
-    global currentStageCount
+    currentStageCount = gl.get_value("currentStageCount")
     currentStageCount += val
     if currentStageCount < 0:
-        currentStageCount = 0
         return
-    global globalMainWindowObj
-    globalMainWindowObj.setTextToLabel(buildDisplayString())
+    gl.set_value("currentStageCount", currentStageCount)
+    gl.get_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
 
 
 def exitTheProgram():
-    sys.exit("Program shut down noramlly by clicked the exitbtn.")
+    exitMsg = "Program shut down noramlly by clicked the exitbtn."
+    print(exitMsg)
+    sys.exit(exitMsg)
 
 
 def resetCurrentValues():
-    global currentStageCount
-    global currentRefresh
-    global coursesList
-    currentRefresh = 0
-    currentStageCount = 0
-    coursesList = set()
-
-    global maxRefresh
-    global targetStageCount
     config = configparser.ConfigParser()
     config.read(r'config.ini', encoding="utf8")
-    targetStageCount = int(config.get('321Config', 'targetStageCount'))
-    maxRefresh = int(config.get('321Config', 'maxRefresh'))
 
-    global globalMainWindowObj
-    globalMainWindowObj.setTextToLabel(buildDisplayString())
+    gl.set_value("currentRefresh", 0)
+    gl.set_value("currentStageCount", 0)
+    gl.set_value("coursesList", set())
+
+    gl.set_value("targetStageCount", int(
+        config.get('321Config', 'targetStageCount')))
+    gl.set_value("maxRefresh", int(config.get('321Config', 'maxRefresh')))
+    gl.set_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
