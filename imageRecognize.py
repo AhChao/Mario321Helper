@@ -1,24 +1,18 @@
 import cv2
 import numpy as np
-import configparser
-
-config = configparser.ConfigParser()
-config.read(r'config.ini', encoding="utf8")
-isStreamWithFullScreen = config.get(
-    'StreamSettings', 'isStreamWithFullScreen') == "True"
-
-TemplateFor321 = cv2.convertScaleAbs(
-    cv2.imread("./sampleImgs/321Mapping.png" if not isStreamWithFullScreen else "./sampleImgs/321Mapping_fullScreen.png"))
-TemplateForCourseTitle = cv2.convertScaleAbs(
-    cv2.imread("./sampleImgs/courseTitleMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseTitleMapping_fullScreen.png"))
-TemplateForCourseClear = cv2.convertScaleAbs(
-    cv2.imread("./sampleImgs/courseClearMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseClearMapping_fullScreen.png"))
+import globalVar as gl
 
 
 def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
-    global TemplateFor321
-    global TemplateForCourseClear
-    global isStreamWithFullScreen
+    isStreamWithFullScreen = gl.get_value("isStreamWithFullScreen")
+
+    TemplateFor321 = cv2.convertScaleAbs(
+        cv2.imread("./sampleImgs/321Mapping.png" if not isStreamWithFullScreen else "./sampleImgs/321Mapping_fullScreen.png"))
+    TemplateForCourseTitle = cv2.convertScaleAbs(
+        cv2.imread("./sampleImgs/courseTitleMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseTitleMapping_fullScreen.png"))
+    TemplateForCourseClear = cv2.convertScaleAbs(
+        cv2.imread("./sampleImgs/courseClearMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseClearMapping_fullScreen.png"))
+
     template = TemplateForCourseTitle if templateName == "321Mapping" else TemplateForCourseClear
     if templateName == "321Mapping":
         if isStreamWithFullScreen:
