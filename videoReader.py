@@ -16,8 +16,6 @@ from imageRecognize import isSimilarToTargetTemplate
 from textRecognize import recognizeTheImage
 import globalVar as gl
 
-gl._init()
-
 
 def initSettingValues():
     config = configparser.ConfigParser()
