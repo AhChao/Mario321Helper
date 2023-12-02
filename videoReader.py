@@ -128,7 +128,7 @@ def loggingStreaming(mainWindowObj):
             thresholdForCourseClear = gl.get_value("thresholdForCourseClear")
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
-                    arg1, arg2, arg3)), args=(val321Queue, "321Mapping", cv2.convertScaleAbs(frame), thresholdFor321))  # 2 count then plus 1)
+                    arg1, arg2, arg3)), args=(val321Queue, "courseTitleMapping", cv2.convertScaleAbs(frame), thresholdFor321))  # 2 count then plus 1)
                 threadFor321Detect.start()
             if not isMatchForCourseClearCoolDownNow:
                 isInputMatchToCourseClearTemplate = isSimilarToTargetTemplate(

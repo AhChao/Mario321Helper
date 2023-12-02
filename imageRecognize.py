@@ -5,16 +5,13 @@ import globalVar as gl
 
 def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
     isStreamWithFullScreen = gl.get_value("isStreamWithFullScreen")
-
-    TemplateFor321 = cv2.convertScaleAbs(
-        cv2.imread("./sampleImgs/321Mapping.png" if not isStreamWithFullScreen else "./sampleImgs/321Mapping_fullScreen.png"))
     TemplateForCourseTitle = cv2.convertScaleAbs(
         cv2.imread("./sampleImgs/courseTitleMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseTitleMapping_fullScreen.png"))
     TemplateForCourseClear = cv2.convertScaleAbs(
         cv2.imread("./sampleImgs/courseClearMapping.png" if not isStreamWithFullScreen else "./sampleImgs/courseClearMapping_fullScreen.png"))
 
-    template = TemplateForCourseTitle if templateName == "321Mapping" else TemplateForCourseClear
-    if templateName == "321Mapping":
+    template = TemplateForCourseTitle if templateName == "courseTitleMapping" else TemplateForCourseClear
+    if templateName == "courseTitleMapping":
         if isStreamWithFullScreen:
             x = 0
             y = 0
@@ -27,8 +24,6 @@ def isSimilarToTargetTemplate(templateName, sourceObj, threshold):
             w = 1000
 
         sourceObj = sourceObj[y:y+h, x:x+w]
-
-    if templateName == "321Mapping":
         templateGray = cv2.cvtColor(template, cv2.COLOR_BGR2RGB)
         targetGray = cv2.cvtColor(sourceObj, cv2.COLOR_BGR2RGB)
     else:
