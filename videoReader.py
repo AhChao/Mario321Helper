@@ -172,6 +172,7 @@ def buildDisplayString():
 def addFakeStage():
     coursesList = gl.get_value("coursesList")
     currentRefresh = gl.get_value("currentRefresh")
+    currentStageCount = gl.get_value("currentStageCount")
     targetCount = currentRefresh + currentStageCount + 1
     i = 0
     while len(coursesList) < targetCount:
@@ -195,6 +196,7 @@ def operateOnCurrentRefreshCount(val):
             val -= 1
     else:
         addFakeStage()
+    gl.set_value("currentRefresh", currentRefresh)
     gl.get_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
 
 
@@ -224,4 +226,4 @@ def resetCurrentValues():
     gl.set_value("targetStageCount", int(
         config.get('321Config', 'targetStageCount')))
     gl.set_value("maxRefresh", int(config.get('321Config', 'maxRefresh')))
-    gl.set_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
+    gl.get_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
