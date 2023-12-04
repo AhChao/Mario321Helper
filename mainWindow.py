@@ -1,11 +1,16 @@
-from PyQt5.QtWidgets import *
+# python builtin lib
+import sys
+
+# pip install lib
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+import configparser
+
+# local py filefrom PyQt5.QtWidgets import *
 from outlineLabel import OutlinedLabel
 from picButton import PicButton
-import configparser
 from videoReader import *
-import sys
 
 
 class MainWindow(QMainWindow):
@@ -13,9 +18,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         config = configparser.ConfigParser()
         config.read(r'config.ini', encoding="utf8")
-        isDynamicDisplayMode = config.get(
-            'DisplayConfig', 'isDynamicDisplayMode') == "True"
+        gl.set_value("isDynamicDisplayMode", config.get(
+            'DisplayConfig', 'isDynamicDisplayMode') == "True")
 
+        # Init the window style
         self.setWindowFlag(Qt.FramelessWindowHint)
         if config.get('DisplayConfig', 'isBackgroundTransparent') == "True":
             self.setStyleSheet("background-color: rgba(255,255,255,0.5);")
@@ -24,9 +30,10 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(
                 r"background-image: url('./imgs/background_solid.png');")
         self.setWindowTitle("Mario321Helper")
-        label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
-
         fontSize = int(config.get('DisplayConfig', 'fontSize'))
+
+        # Init the label for displaying
+        label = OutlinedLabel("0 / 15 刷  0 / 7 關", self)
         labelStyle = "font-family : Microsoft JhengHei;\
                     font-size: "+str(fontSize)+"pt;\
                     font-weight: bold;"
@@ -39,47 +46,61 @@ class MainWindow(QMainWindow):
         if config.get('DisplayConfig', 'displayModifyButton') == "True":
             btnSize = 25
             btnBaseLine = fontSize + 45
-            refreshAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
-            refreshAddBtn.resize(btnSize, btnSize)
-            refreshAddBtn.clicked.connect(
-                lambda: operateOnCurrentRefreshCount(1))
-            refreshAddBtn.setObjectName("refreshAddBtn")
+            refreshAddBtn = CreatePicButton(
+                imgPath="./imgs/addBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: operateOnCurrentRefreshCount(1),
+                objName="refreshAddBtn"
+            )
 
-            refreshMinusBtn = PicButton(
-                QPixmap('./imgs/subtractBtn.png'), self)
-            refreshMinusBtn.resize(btnSize, btnSize)
-            refreshMinusBtn.clicked.connect(
-                lambda: operateOnCurrentRefreshCount(-1))
-            refreshMinusBtn.setObjectName("refreshMinusBtn")
+            refreshMinusBtn = CreatePicButton(
+                imgPath="./imgs/subtractBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: operateOnCurrentRefreshCount(-1),
+                objName="refreshMinusBtn"
+            )
+            courseClearAddBtn = CreatePicButton(
+                imgPath="./imgs/addBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: operateOnCurrentStageCount(1),
+                objName="courseClearAddBtn"
+            )
+            courseClearMinusBtn = CreatePicButton(
+                imgPath="./imgs/subtractBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: operateOnCurrentStageCount(-1),
+                objName="courseClearMinusBtn"
+            )
 
-            courseClearAddBtn = PicButton(QPixmap('./imgs/addBtn.png'), self)
-            courseClearAddBtn.resize(btnSize, btnSize)
-            courseClearAddBtn.clicked.connect(
-                lambda: operateOnCurrentStageCount(1))
-            courseClearAddBtn.setObjectName("courseClearAddBtn")
+            btnEdit = CreatePicButton(
+                imgPath="./imgs/editBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: toggleEditBtns(self),
+                objName="courseClearMinusBtn"
+            )
 
-            courseClearMinusBtn = PicButton(
-                QPixmap('./imgs/subtractBtn.png'), self)
-            courseClearMinusBtn.resize(btnSize, btnSize)
-            courseClearMinusBtn.clicked.connect(
-                lambda: operateOnCurrentStageCount(-1))
-            courseClearMinusBtn.setObjectName("courseClearMinusBtn")
+            btnReset = CreatePicButton(
+                imgPath="./imgs/reset.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: resetCurrentValues(),
+                objName="btnReset"
+            )
 
-            btnEdit = PicButton(QPixmap('./imgs/editBtn.png'), self)
-            btnEdit.resize(btnSize, btnSize)
-            btnEdit.clicked.connect(lambda: toggleEditBtns(self))
+            btnExit = CreatePicButton(
+                imgPath="./imgs/exitBtn.png",
+                parentObj=self,
+                btnSize=btnSize,
+                clickevt=lambda: exitTheProgram(),
+                objName="btnExit"
+            )
 
-            btnReset = PicButton(QPixmap('./imgs/reset.png'), self)
-            btnReset.resize(btnSize, btnSize)
-            btnReset.clicked.connect(resetCurrentValues)
-            btnReset.setObjectName("btnReset")
-
-            btnExit = PicButton(QPixmap('./imgs/exitBtn.png'), self)
-            btnExit.resize(btnSize, btnSize)
-            btnExit.clicked.connect(exitTheProgram)
-            btnExit.setObjectName("btnExit")
-
-            if isDynamicDisplayMode:
+            if gl.get_value("isDynamicDisplayMode"):
                 refreshAddBtn.move(fontSize*6, btnBaseLine)
                 refreshMinusBtn.move(int(fontSize*7.5), btnBaseLine)
                 courseClearAddBtn.move(fontSize*14, btnBaseLine)
@@ -104,7 +125,7 @@ class MainWindow(QMainWindow):
         self.label.setText(displayStr)
         config = configparser.ConfigParser()
         config.read(r'config.ini', encoding="utf8")
-        if config.get('DisplayConfig', 'isDynamicDisplayMode') == "True":
+        if gl.get_value("isDynamicDisplayMode"):
             self.label.adjustSize()
         else:
             self.label.resize(350, 40)
@@ -132,3 +153,11 @@ def toggleEditBtns(mainWindowObj):
     courseClearMinusBtn.show() if not courseClearMinusBtn.isVisible(
     ) else courseClearMinusBtn.hide()
     btnReset.show() if not btnReset.isVisible() else btnReset.hide()
+
+
+def CreatePicButton(imgPath, parentObj, btnSize, clickevt, objName):
+    btn = PicButton(QPixmap(imgPath), parentObj)
+    btn.resize(btnSize, btnSize)
+    btn.clicked.connect(clickevt)
+    btn.setObjectName(objName)
+    return btn
