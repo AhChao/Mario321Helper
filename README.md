@@ -42,3 +42,13 @@
 
 [maan-icons](https://www.flaticon.com/authors/maan-icons)  
 [Freepik](https://www.flaticon.com/authors/freepik)
+
+# For Development
+
+## Setup environment
+
+可以透過 requirements.txt 安裝需要的 python 套件
+
+```bash
+pip install -r requirements.txt
+```
