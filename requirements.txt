@@ -1,0 +1,6 @@
+PyQt5
+opencv-python
+streamlink
+easyocr
+pygrabber
+win11toast
