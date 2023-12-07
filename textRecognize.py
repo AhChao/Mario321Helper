@@ -1,8 +1,6 @@
 import easyocr
 import re
-import io
 import cv2
-from PIL import Image
 
 
 def is_valid_courseName(input_string):
