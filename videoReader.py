@@ -41,6 +41,10 @@ def loggingStreaming(mainWindowObj):
         'StreamSettings', 'isStreamWithFullScreen') == "True"
     mainWindowObj.setTextToLabel(buildDisplayString())
 
+    cooldownTimeForCourseClearMultiplier = 2
+    cooldownTimeForCourseClearMultiplier = config.get(
+        'StreamSettings', 'cooldownTimeForCourseClearMultiplier')
+        
     matchCourseClearTimes = 0
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
@@ -99,12 +103,13 @@ def loggingStreaming(mainWindowObj):
     save_interval = 1.5  # before 0.3 when use 321 icon
     frame_count = 0
     val321Queue = queue.Queue()
+    cooldownTimeForCourseClearTotal = fps* cooldownTimeForCourseClearMultiplier
     while cap.isOpened():
         ret, frame = cap.read()
         frame_count += 1
         if isMatchForCourseClearCoolDownNow:
             cooldownTimeForCourseClear += 1
-            if cooldownTimeForCourseClear >= fps*2:
+            if cooldownTimeForCourseClear >= cooldownTimeForCourseClearTotal:
                 cooldownTimeForCourseClear = 0
                 isMatchForCourseClearCoolDownNow = False
 
