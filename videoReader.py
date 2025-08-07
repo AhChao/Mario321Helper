@@ -9,7 +9,7 @@ import cv2
 import streamlink
 import configparser
 from pygrabber.dshow_graph import FilterGraph
-from win11toast import toast
+# from win11toast import toast
 
 # local py file
 from imageRecognize import isSimilarToTargetTemplate
@@ -93,9 +93,9 @@ def loggingStreaming(mainWindowObj):
         minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(obsSourceCheckingResult)
         if minVal <= 0.01:
             print("Error : OBS Virtual Camera not opened or cloud not be found.")
-            toast(
-                "Obs Virtual Camera 未開啟",
-                "影像來源設定為使用 Obs Virtual Camera，但未正確讀取到畫面。(Obs回傳為待機影像)")
+            # toast(
+            #     "Obs Virtual Camera 未開啟",
+            #     "影像來源設定為使用 Obs Virtual Camera，但未正確讀取到畫面。(Obs回傳為待機影像)")
             return
 
     print("fps : " + str(fps))
@@ -162,9 +162,9 @@ def loggingStreaming(mainWindowObj):
             break
 
     print("Error : Source is terminated, please check again then restart the program.")
-    toast(
-        "影像來源已中斷",
-        "本來使用的影像來源已中斷，請重新確認後再運行程式")
+#     toast(
+#         "影像來源已中斷",
+#         "本來使用的影像來源已中斷，請重新確認後再運行程式")
 
 
 def buildDisplayString():
