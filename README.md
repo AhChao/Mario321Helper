@@ -28,6 +28,10 @@
 ## 安裝
 
 - 自行用 pyinstaller 打包
+  ```bash
+    pip install pyinstaller
+    python -m PyInstaller .\Mario321Helper.spec
+  ```
   或
 - 下載我打包好的 exe, 放在 [onedrive 空間](https://1drv.ms/u/s!AnNN4hXDvIX6gcR4reUh3FYsLLceMQ?e=3AyQqU)，下載後解壓縮(7z)
 
