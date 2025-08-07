@@ -42,15 +42,15 @@ def loggingStreaming(mainWindowObj):
     mainWindowObj.setTextToLabel(buildDisplayString())
 
     cooldownTimeForCourseClearMultiplier = 2
-    cooldownTimeForCourseClearMultiplier = config.get(
-        'StreamSettings', 'cooldownTimeForCourseClearMultiplier')
-        
+    cooldownTimeForCourseClearMultiplier = config.get('StreamSettings', 'cooldownTimeForCourseClearMultiplier')
+
     matchCourseClearTimes = 0
     cooldownTimeForCourseClear = 0
     isMatchForCourseClearCoolDownNow = False
     cooldownTimeFor321 = 0
     isMatchFor321CoolDownNow = False
 
+    virtualCameraName = config.get('StreamSettings', 'virtualCameraName')
     streamSource = config.get('StreamSettings', 'streamSource')
     fps = 0
     if streamSource == "LocalVideo":
@@ -76,7 +76,7 @@ def loggingStreaming(mainWindowObj):
         fps = int(cap.get(cv2.CAP_PROP_FPS))
     elif streamSource == "LocalVirtualCamera":
         graph = FilterGraph()
-        device = graph.get_input_devices().index("OBS Virtual Camera")
+        device = graph.get_input_devices().index(virtualCameraName)
         cap = cv2.VideoCapture(device)
         print("Current Virtual Camera Size - width : " +
               str(int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))) + " height : " + str(int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
