@@ -26,8 +26,8 @@ def initSettingValues():
         config.get('321Config', 'targetStageCount')))
     gl.set_value("maxRefresh", int(config.get('321Config', 'maxRefresh')))
     gl.set_value("globalMainWindowObj", "")
-    gl.set_value("thresholdFor321", 0)
-    gl.set_value("thresholdForCourseClear", 0)
+    gl.set_value("thresholdFor321", float(config.get('StreamSettings','thresholdFor321')))
+    gl.set_value("thresholdForCourseClear", float(config.get('StreamSettings','thresholdForCourseClear')))
     gl.set_value("coursesList", set())
 
 
@@ -142,7 +142,7 @@ def loggingStreaming(mainWindowObj):
             if isInputMatchToCourseClearTemplate:
                 matchCourseClearTimes += 1
                 if matchCourseClearTimes >= 1:
-                    currentStageCount += 1
+                    operateOnCurrentStageCount("currentStageCount", 1)
                     isMatchForCourseClearCoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
             if not isMatchFor321CoolDownNow:
@@ -155,7 +155,7 @@ def loggingStreaming(mainWindowObj):
                     coursesList.add(textRecognized)
                     print("Today Courses : " + str(coursesList))
                     gl.set_value("currentRefresh", max(
-                        len(coursesList) - currentStageCount - 1, 0))
+                        len(coursesList) - gl.get_value("currentStageCount") - 1, 0))
                     isMatchFor321CoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
         if cv2.waitKey(1) & 0xFF == ord('q'):
