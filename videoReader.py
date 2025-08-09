@@ -26,8 +26,8 @@ def initSettingValues():
         config.get('321Config', 'targetStageCount')))
     gl.set_value("maxRefresh", int(config.get('321Config', 'maxRefresh')))
     gl.set_value("globalMainWindowObj", "")
-    gl.set_value("thresholdFor321", float(config.get('StreamSettings','thresholdFor321')))
-    gl.set_value("thresholdForCourseClear", float(config.get('StreamSettings','thresholdForCourseClear')))
+    gl.set_value("thresholdFor321", float(config.get('MappingSettings','thresholdFor321')))
+    gl.set_value("thresholdForCourseClear", float(config.get('MappingSettings','thresholdForCourseClear')))
     gl.set_value("coursesList", set())
 
 
@@ -43,7 +43,7 @@ def loggingStreaming(mainWindowObj):
     mainWindowObj.setTextToLabel(buildDisplayString())
 
     cooldownTimeForCourseClearMultiplier = 2
-    cooldownTimeForCourseClearMultiplier = float(config.get('StreamSettings', 'cooldownTimeForCourseClearMultiplier'))
+    cooldownTimeForCourseClearMultiplier = float(config.get('MappingSettings', 'cooldownTimeForCourseClearMultiplier'))
 
     matchCourseClearTimes = 0
     cooldownTimeForCourseClear = 0
@@ -53,6 +53,7 @@ def loggingStreaming(mainWindowObj):
 
     virtualCameraName = config.get('StreamSettings', 'virtualCameraName')
     streamSource = config.get('StreamSettings', 'streamSource')
+    isMappingWithOldImage = config.get('MappingSettings', 'mappingWithOldImage') == "True"
     fps = 0
     if streamSource == "LocalVideo":
         cap = cv2.VideoCapture("testImgs/321TestVideo.mkv")
@@ -122,6 +123,9 @@ def loggingStreaming(mainWindowObj):
 
         if config.get('DisplayConfig', 'debugWithShowFrame') == "True":
             cv2.imshow('frame', frame)  # may spend about 0.12s to display
+        if config.get('DisplayConfig', 'debugWithCompareFrame') == "True":
+            cv2.imshow('courseTitle', frame[0:500, 0:1600])
+            cv2.imshow('courseClear', frame[469:606, 482:1435])
 
         # Compare Per 0.5 seconds
         if math.floor(frame_count % (fps * save_interval)) == 0:
@@ -131,12 +135,12 @@ def loggingStreaming(mainWindowObj):
             thresholdFor321 = gl.get_value("thresholdFor321")
             thresholdForCourseClear = gl.get_value("thresholdForCourseClear")
             if not isMatchFor321CoolDownNow:
-                threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3: q.put(isSimilarToTargetTemplate(
-                    arg1, arg2, arg3)), args=(val321Queue, "courseTitleMapping", cv2.convertScaleAbs(frame), thresholdFor321))  # 2 count then plus 1)
+                threadFor321Detect = threading.Thread(target=lambda q, arg1, arg2, arg3,arg4: q.put(isSimilarToTargetTemplate(
+                    arg1, arg2, arg3, arg4)), args=(val321Queue, "courseTitleMapping", cv2.convertScaleAbs(frame), thresholdFor321, isMappingWithOldImage ))  # 2 count then plus 1)
                 threadFor321Detect.start()
             if not isMatchForCourseClearCoolDownNow:
                 isInputMatchToCourseClearTemplate = isSimilarToTargetTemplate(
-                    "courseClearMapping", cv2.convertScaleAbs(frame), thresholdForCourseClear)
+                    "courseClearMapping", cv2.convertScaleAbs(frame), thresholdForCourseClear, isMappingWithOldImage)
             if not isMatchFor321CoolDownNow:
                 threadFor321Detect.join()
             # compare with courseClear, cd for 5 seconds
@@ -191,6 +195,7 @@ def addFakeStage():
 
 def operateOnCurrentRefreshCount(val):
     currentRefresh = gl.get_value("currentRefresh")
+    print("currentRefresh " + str(currentRefresh) + ", " + str(val))
     currentRefresh += val
     coursesList = gl.get_value("coursesList")
     gl.set_value("currentRefresh", currentRefresh)
@@ -203,7 +208,6 @@ def operateOnCurrentRefreshCount(val):
             val -= 1
     else:
         addFakeStage()
-    gl.set_value("currentRefresh", currentRefresh)
     gl.get_value("globalMainWindowObj").setTextToLabel(buildDisplayString())
 
 
