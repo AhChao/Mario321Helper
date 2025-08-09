@@ -193,6 +193,7 @@ def operateOnCurrentRefreshCount(val):
     currentRefresh = gl.get_value("currentRefresh")
     currentRefresh += val
     coursesList = gl.get_value("coursesList")
+    gl.set_value("currentRefresh", currentRefresh)
     if currentRefresh < 0:
         return
     if val < 0:
