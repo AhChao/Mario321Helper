@@ -39,10 +39,11 @@ def loggingStreaming(mainWindowObj):
         'DisplayConfig', 'debugWithCompareFrame') == "True"
     isStreamWithFullScreen = config.get(
         'StreamSettings', 'isStreamWithFullScreen') == "True"
+    gl.set_value("isStreamWithFullScreen", isStreamWithFullScreen)
     mainWindowObj.setTextToLabel(buildDisplayString())
 
     cooldownTimeForCourseClearMultiplier = 2
-    cooldownTimeForCourseClearMultiplier = config.get('StreamSettings', 'cooldownTimeForCourseClearMultiplier')
+    cooldownTimeForCourseClearMultiplier = float(config.get('StreamSettings', 'cooldownTimeForCourseClearMultiplier'))
 
     matchCourseClearTimes = 0
     cooldownTimeForCourseClear = 0
@@ -142,7 +143,7 @@ def loggingStreaming(mainWindowObj):
             if isInputMatchToCourseClearTemplate:
                 matchCourseClearTimes += 1
                 if matchCourseClearTimes >= 1:
-                    operateOnCurrentStageCount("currentStageCount", 1)
+                    operateOnCurrentStageCount(1)
                     isMatchForCourseClearCoolDownNow = True
                     mainWindowObj.setTextToLabel(buildDisplayString())
             if not isMatchFor321CoolDownNow:
